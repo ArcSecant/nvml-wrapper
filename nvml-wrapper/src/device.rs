@@ -1357,6 +1357,16 @@ impl<'nvml> Device<'nvml> {
         }
     }
 
+    pub fn set_fan_speed(&self, fan_idx: u32, fan_speed: u32) -> Result<(), NvmlError> {
+        let sym = nvml_sym(self.nvml.lib.nvmlDeviceSetFanSpeed_v2.as_ref())?;
+
+        unsafe {
+            nvml_try(sym(self.device, fan_idx, fan_speed))?;
+
+            Ok(())
+        }
+    }
+
     /**
     Gets the number of fans on this [`Device`].
 
@@ -5319,6 +5329,12 @@ mod test {
     fn fan_speed() {
         let nvml = nvml();
         test_with_device(3, &nvml, |device| device.fan_speed(0))
+    }
+
+    #[test]
+    fn set_fan_speed() {
+        let nvml = nvml();
+        test_with_device(3, &nvml, |device| device.set_fan_speed(0, 50))
     }
 
     #[test]
